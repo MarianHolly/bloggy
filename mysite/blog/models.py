@@ -2,7 +2,12 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-# Create your models here.
+# Manager Model
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status=Post.Status.PUBLISHED)
+
+# Post Model
 class Post(models.Model):
     # Status Field
     class Status(models.TextChoices):
@@ -20,7 +25,7 @@ class Post(models.Model):
     body = models.TextField()
 
     # Datetime Fields
-    published = models.DateTimeField(default=timezone.now)
+    publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -30,12 +35,15 @@ class Post(models.Model):
         default=Status.DRAFT,
     )
 
+    objects = models.Manager() # default manager
+    published = PublishedManager() # custom manager
+
     # Default Sort Order
     class Meta:
-        ordering = ('-published',)
+        ordering = ('-publish',)
         # adding a database index
         indexes = [
-            models.Index(fields=['-published']),
+            models.Index(fields=['-publish']),
         ]
 
     def __str__(self):
