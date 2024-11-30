@@ -41,7 +41,7 @@ class Post(models.Model):
     published = PublishedManager() # custom manager
 
     # Taggs
-    tags = TaggableManager()
+    tags = TaggableManager(blank=False)
 
     # Default Sort Order
     class Meta:
